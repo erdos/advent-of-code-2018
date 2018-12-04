@@ -11,10 +11,24 @@
     {:id (f id), :x (f x), :y (f y), :width (f w), :height (f h)}))
 
 (defn- coords [{:keys [x y width height]}]
-  (for [x (range x (+ x width))
-        y (range y (+ y height))] [x y]))
+  (for [w (range width) h (range height)]
+    [(+ x w) (+ y h)]))
 
 (defn solve-1 []
   (count (remove #{1} (vals (frequencies (mapcat coords (map parse (words))))))))
 
-; (solve-1)
+;; (solve-1)
+
+(defn- coords-with-id [{:keys [x y width height id]}]
+  (for [w (range width) h (range height)]
+    {:x (+ x w) :y (+ y h) :id id}))
+
+(defn solve-2 []
+  (let [alles (mapcat coords-with-id (map parse (words)))]
+    (reduce disj (set (map :id alles))
+            (for [[_ ps] (group-by (juxt :x :y) alles)
+                  :when (not= 1 (count ps))
+                  p ps]
+              (:id p)))))
+
+;; (solve-2)
